@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const url = require('url');
 const snoowrap = require('snoowrap');
-const { response } = require('express');
 
 // Telegram Bot stuff
 const { TOKEN, VERCEL_URL } = process.env;
