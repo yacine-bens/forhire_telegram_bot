@@ -30,7 +30,7 @@ const init = async () => {
     console.log(res.data);
 }
 
-// Comment here!
+// Database alternative
 let dataObject = {};
 
 // Receive messages
@@ -60,13 +60,17 @@ app.post(URI, async (req, res) => {
         ACCESS_TOKEN = await getAccessToken();
     }
 
+    // Data object
+    // First time
+    if (!dataObject[chatId]) {
+        dataObject[chatId] = {};
+        dataObject[chatId]['last_cmd'] = '/start';
+        dataObject[chatId]['last_posts'] = [];
+    }
+
+
     // Chack if message is a bot command
     if (isBotCommand(req.body.message)) {
-        // First time
-        if (!dataObject[chatId]) {
-            dataObject[chatId] = {};
-            dataObject[chatId]['last_posts'] = [];
-        }
         dataObject[chatId]['last_cmd'] = messageText;
 
         switch (messageText) {
@@ -83,7 +87,7 @@ app.post(URI, async (req, res) => {
                     dataObject[chatId]['last_posts'].push(posts[i].url);
                 }
 
-                response_message += '\n\nSend post number to get details.'
+                response_message += '\nSend post number to get details.'
                 break;
 
             case '/details':
@@ -108,7 +112,7 @@ app.post(URI, async (req, res) => {
             else {
                 const number = parseInt(messageText);
                 const post_url = dataObject[chatId]['last_posts'][number - 1];
-                const post = getPostDetails(post_url);
+                const post = await getPostDetails(post_url);
                 response_message = formatPostDetails(post);
             }
         }
