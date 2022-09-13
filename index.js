@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 // Initialize stuff
 const init = async () => {
     // Avoid initializing variables in listen function when using Serverless functions
-    
+
     // Set Telegram Webhook
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
     console.log(res.data);
@@ -33,14 +33,14 @@ const init = async () => {
 // Receive messages
 app.post(URI, async (req, res) => {
     console.log(req.body);
-    
+
     if (!req.body.message || !req.body.message.text) return res.send();
-    
+
     // Get access token
-    if(!ACCESS_TOKEN) ACCESS_TOKEN = await getAccessToken();
-    
+    if (!ACCESS_TOKEN) ACCESS_TOKEN = await getAccessToken();
+
     // Instanciate snoowrap object
-    if(!r){
+    if (!r) {
         r = new snoowrap({
             userAgent: USER_AGENT,
             accessToken: ACCESS_TOKEN
@@ -173,8 +173,8 @@ async function getPosts(lmt = 50) {
     submissions = submissions.filter(sub => !['for', 'filled'].some(el => sub['link_flair_text'] ? sub['link_flair_text'].toLowerCase().includes(el) : false) && !sub['over_18']).map(sub => {
         // remove flair from title
         let sub_title = sub.title;
-        if(sub_title.match(/\[(.*?)]/gm) && sub_title.match(/\[(.*?)]/gm).length){
-            sub_title.match(/\[(.*?)]/gm).forEach(res=>{sub_title = sub_title.replace(res, '').trim()});
+        if (sub_title.match(/\[(.*?)]/gm) && sub_title.match(/\[(.*?)]/gm).length) {
+            sub_title.match(/\[(.*?)]/gm).forEach(res => { if (res.length < 11) sub_title = sub_title.replace(res, '').trim() });
         }
 
         return {
@@ -200,8 +200,8 @@ async function getPostDetails(post_url) {
 
     // remove flair from title
     let post_title = post.title;
-    if(post_title.match(/\[(.*?)]/gm) && post_title.match(/\[(.*?)]/gm).length){
-        post_title.match(/\[(.*?)]/gm).forEach(res=>{post_title = post_title.replace(res, '').trim()});
+    if (post_title.match(/\[(.*?)]/gm) && post_title.match(/\[(.*?)]/gm).length) {
+        post_title.match(/\[(.*?)]/gm).forEach(res => { if (res.length < 11) post_title = post_title.replace(res, '').trim() });
     }
 
     return {
