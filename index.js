@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const url = require('url');
 const snoowrap = require('snoowrap');
-// test comment
+
 // Telegram Bot stuff
 const { TOKEN, VERCEL_URL } = process.env;
 const SERVER_URL = `https://${VERCEL_URL}`;
@@ -41,6 +41,7 @@ const init = async () => {
 app.post(URI, async (req, res) => {
     console.log(req.body);
 
+    return res.send();
     if (!req.body.message || !req.body.message.text) return res.send();
 
     const chatId = req.body.message.chat.id;
