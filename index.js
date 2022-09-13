@@ -30,6 +30,9 @@ const init = async () => {
     console.log(res.data);
 }
 
+// Comment here!
+let dataObject = {};
+
 // Receive messages
 app.post(URI, async (req, res) => {
     console.log(req.body);
@@ -59,15 +62,28 @@ app.post(URI, async (req, res) => {
 
     // Chack if message is a bot command
     if (isBotCommand(req.body.message)) {
+        // First time
+        if (!dataObject[chatId]) {
+            dataObject[chatId] = {};
+            dataObject[chatId]['last_posts'] = [];
+        }
+        dataObject[chatId]['last_cmd'] = messageText;
+
         switch (messageText) {
             case '/posts':
+                // Reset lasts_posts array
+                dataObject[chatId]['last_posts'] = [];
+
                 let posts = await getPosts();
 
                 // Format posts list
                 for (let i = 0; i < posts.length; i++) {
                     let post = `<a href="${posts[i].url}">${posts[i].title}</a>`
                     response_message += `${i + 1} - ${post}\n\n`;
+                    dataObject[chatId]['last_posts'].push(posts[i].url);
                 }
+
+                response_message += '\n\nSend post number to get details.'
                 break;
 
             case '/details':
@@ -84,23 +100,28 @@ app.post(URI, async (req, res) => {
         }
     }
     else {
-        // isValidURL() is an async funciton
-        const isValid = await isValidURL(messageText);
-        if (isValid) {
-            let post = await getPostDetails(messageText);
-
-            // Format post details
-            response_message =
-                '- <b>Title :</b> ' + post['title'] +
-                '\n\n- <b>Flair :</b> ' + post['flair'] +
-                '\n\n- <b>Upvotes :</b> ' + post['ups'] +
-                '\n\n- <b>Downvotes :</b> ' + post['downs'] +
-                '\n\n- <b>Author :</b> ' + post['author'] +
-                '\n\n- <b>Comments :</b> ' + post['comments'] +
-                '\n\n- <b>Date :</b> ' + post['created'];
+        if (dataObject[chatId]['last_cmd'] === '/posts') {
+            // Check if message received is a valid number
+            if (isNaN(messageText) || parseInt(messageText) < 0 || parseInt(messageText) > dataObject[chatId]['last_posts'].length) {
+                response_message = 'Please enter a valid number.'
+            }
+            else {
+                const number = parseInt(messageText);
+                const post_url = dataObject[chatId]['last_posts'][number - 1];
+                const post = getPostDetails(post_url);
+                response_message = formatPostDetails(post);
+            }
         }
-        else {
-            response_message = 'Please enter a valid post URL.'
+        else if (dataObject[chatId]['last_cmd'] === '/details') {
+            // isValidURL() is an async funciton
+            const isValid = await isValidURL(messageText);
+            if (isValid) {
+                let post = await getPostDetails(messageText);
+                response_message = formatPostDetails(post);
+            }
+            else {
+                response_message = 'Please enter a valid post URL.'
+            }
         }
     }
 
@@ -214,6 +235,20 @@ async function getPostDetails(post_url) {
         url: post['url'],
         created: secondsToDate(post['created_utc'])
     }
+}
+
+
+function formatPostDetails(post) {
+    const details =
+        '- <b>Title :</b> ' + post['title'] +
+        '\n\n- <b>Flair :</b> ' + post['flair'] +
+        '\n\n- <b>Upvotes :</b> ' + post['ups'] +
+        '\n\n- <b>Downvotes :</b> ' + post['downs'] +
+        '\n\n- <b>Author :</b> ' + post['author'] +
+        '\n\n- <b>Comments :</b> ' + post['comments'] +
+        '\n\n- <b>Date :</b> ' + post['created'];
+
+    return details;
 }
 
 
