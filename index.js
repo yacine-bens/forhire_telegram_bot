@@ -14,9 +14,9 @@ const WEBHOOK_URL = SERVER_URL + URI;
 
 // Reddit API stuff
 const { USER_AGENT, CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN } = process.env;
-let ACCESS_TOKEN = '';
+let ACCESS_TOKEN = null;
 // Reddit snoowrap object
-let r;
+let r = null;
 
 const app = express();
 app.use(bodyParser.json());
@@ -26,23 +26,24 @@ const init = async () => {
     // Set Telegram Webhook
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
     console.log(res.data);
-
-    // Get access token
-    ACCESS_TOKEN = await getAccessToken();
-
-    // Instanciate snoowrap object
-    r = new snoowrap({
-        userAgent: USER_AGENT,
-        accessToken: ACCESS_TOKEN
-    })
 }
 
 // Receive messages
 app.post(URI, async (req, res) => {
     console.log(req.body);
-
-    return res.send();
+    
     if (!req.body.message || !req.body.message.text) return res.send();
+    
+    // Get access token
+    if(!ACCESS_TOKEN) ACCESS_TOKEN = await getAccessToken();
+    
+    // Instanciate snoowrap object
+    if(!r){
+        r = new snoowrap({
+            userAgent: USER_AGENT,
+            accessToken: ACCESS_TOKEN
+        })
+    };
 
     const chatId = req.body.message.chat.id;
     const messageText = req.body.message.text;
@@ -53,6 +54,8 @@ app.post(URI, async (req, res) => {
     if (!isValidToken(ACCESS_TOKEN)) {
         ACCESS_TOKEN = await getAccessToken();
     }
+
+    console.log(ACCESS_TOKEN);
 
     // Chack if message is a bot command
     if (isBotCommand(req.body.message)) {
