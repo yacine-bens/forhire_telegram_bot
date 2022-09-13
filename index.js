@@ -30,7 +30,7 @@ const init = async () => {
 
 // Receive messages
 app.post(URI, async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     
     if (!req.body.message || !req.body.message.text) return res.send();
     
