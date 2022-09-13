@@ -168,8 +168,14 @@ async function getPosts(lmt = 50) {
 
     let submissions = await r.getSubreddit('forhire').getNew({ limit: limit });
     submissions = submissions.filter(sub => !['for', 'filled'].some(el => sub['link_flair_text'] ? sub['link_flair_text'].toLowerCase().includes(el) : false) && !sub['over_18']).map(sub => {
+        // remove flair from title
+        let sub_title = sub.title;
+        if(sub_title.match(/\[(.*?)]/gm) && sub_title.match(/\[(.*?)]/gm).length){
+            sub_title.match(/\[(.*?)]/gm).forEach(res=>{sub_title = sub_title.replace(res, '').trim()});
+        }
+
         return {
-            title: sub['title'],
+            title: sub_title,
             url: sub['url']
         }
     });
@@ -189,8 +195,14 @@ async function getPostDetails(post_url) {
 
     let post = res.data[0].data.children[0].data;
 
+    // remove flair from title
+    let post_title = post.title;
+    if(post_title.match(/\[(.*?)]/gm) && post_title.match(/\[(.*?)]/gm).length){
+        post_title.match(/\[(.*?)]/gm).forEach(res=>{post_title = post_title.replace(res, '').trim()});
+    }
+
     return {
-        title: post['title'],
+        title: post_title,
         flair: post['link_flair_text'],
         ups: post['ups'],
         downs: post['downs'],
