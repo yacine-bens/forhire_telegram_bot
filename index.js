@@ -33,6 +33,14 @@ const init = async () => {
 // Database alternative
 let dataObject = {};
 
+app.get('/', async (req, res) => {
+    res.send({
+        token: TOKEN,
+        vercel_url: VERCEL_URL,
+        webhook_url: WEBHOOK_URL
+    })
+})
+
 // Receive messages
 app.post(URI, async (req, res) => {
     console.log(req.body);
