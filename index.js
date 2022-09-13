@@ -23,6 +23,8 @@ app.use(bodyParser.json());
 
 // Initialize stuff
 const init = async () => {
+    // Avoid initializing variables in listen function when using Serverless functions
+    
     // Set Telegram Webhook
     const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
     console.log(res.data);
