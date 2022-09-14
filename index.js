@@ -33,14 +33,6 @@ const init = async () => {
 // Database alternative
 let dataObject = {};
 
-app.get('/', async (req, res) => {
-    res.send({
-        token: TOKEN,
-        vercel_url: VERCEL_URL,
-        webhook_url: WEBHOOK_URL
-    })
-})
-
 // Receive messages
 app.post(URI, async (req, res) => {
     console.log(req.body);
@@ -149,6 +141,12 @@ app.post(URI, async (req, res) => {
 
     // Respond to Telegram server
     return res.send();
+})
+
+
+app.listen(process.env.PORT || 5000, async () => {
+    console.log('App is running on port', process.env.PORT || 5000);
+    await init();
 })
 
 
@@ -284,8 +282,3 @@ function secondsToDate(utcSeconds) {
     return d.toUTCString();
 }
 
-
-app.listen(process.env.PORT || 5000, async () => {
-    console.log('App is running on port', process.env.PORT || 5000);
-    await init();
-})
