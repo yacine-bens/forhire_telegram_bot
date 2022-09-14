@@ -30,7 +30,7 @@ const init = async () => {
     console.log(res.data);
 }
 
-init();
+init()
 
 // Database alternative
 let dataObject = {};
@@ -146,10 +146,10 @@ app.post(URI, async (req, res) => {
 })
 
 
-// app.listen(process.env.PORT || 5000, async () => {
-//     console.log('App is running on port', process.env.PORT || 5000);
-//     await init();
-// })
+app.listen(process.env.PORT || 5000, async () => {
+    console.log('App is running on port', process.env.PORT || 5000);
+    // await init();
+})
 
 
 async function getAccessToken() {
@@ -284,5 +284,3 @@ function secondsToDate(utcSeconds) {
     return d.toUTCString();
 }
 
-
-module.exports = app;
