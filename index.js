@@ -27,6 +27,8 @@ async function setWebhook() {
     return res.data;
 }
 
+setWebhook();
+
 
 // Database alternative
 let dataObject = {};
@@ -151,6 +153,7 @@ app.post(URI, async (req, res) => {
 
 
 app.listen(process.env.PORT || 5000, async () => {
+    await setWebhook();
     console.log('App is running on port', process.env.PORT || 5000);
 })
 
