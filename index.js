@@ -195,6 +195,7 @@ function isBotCommand(msg) {
             return entity.type === "bot_command";
         }
     }
+    return false;
 }
 
 
