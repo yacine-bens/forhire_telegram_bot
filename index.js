@@ -27,6 +27,9 @@ async function setWebhook() {
     return res.data;
 }
 
+setWebhook();
+
+
 // Database alternative
 let dataObject = {};
 
