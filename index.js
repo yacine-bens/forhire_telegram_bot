@@ -21,16 +21,9 @@ let r = null;
 const app = express();
 app.use(bodyParser.json());
 
-// Initialize stuff
-const init = async () => {
-    // Avoid initializing variables in listen function when using Serverless functions
+// Set Telegram Webhook
+axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`).then(res=>{console.log(res.data)});
 
-    // Set Telegram Webhook
-    const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
-    console.log(res.data);
-}
-
-init()
 
 // Database alternative
 let dataObject = {};
@@ -148,7 +141,6 @@ app.post(URI, async (req, res) => {
 
 app.listen(process.env.PORT || 5000, async () => {
     console.log('App is running on port', process.env.PORT || 5000);
-    // await init();
 })
 
 
