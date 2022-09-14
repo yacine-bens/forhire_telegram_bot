@@ -22,7 +22,11 @@ const app = express();
 app.use(bodyParser.json());
 
 // Set Telegram Webhook
-axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`).then(res=>{console.log(res.data)});
+let isSetWebhook = false;
+async function setWebhook(){
+    const res = await axios.get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`);
+    if(res.data && res.data.ok) isSetWebhook = true;
+}
 
 
 // Database alternative
@@ -30,6 +34,8 @@ let dataObject = {};
 
 // Receive messages
 app.post(URI, async (req, res) => {
+    if(!isSetWebhook) await setWebhook();
+    
     console.log(req.body);
 
     if (!req.body.message || !req.body.message.text) return res.send();
@@ -140,6 +146,7 @@ app.post(URI, async (req, res) => {
 
 
 app.listen(process.env.PORT || 5000, async () => {
+    await setWebhook();
     console.log('App is running on port', process.env.PORT || 5000);
 })
 
