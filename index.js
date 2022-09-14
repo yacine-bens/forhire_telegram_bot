@@ -27,18 +27,8 @@ async function setWebhook() {
     return res.data;
 }
 
-// setWebhook();
-
-
 // Database alternative
 let dataObject = {};
-
-
-// Workaroud to set webhook using base url "/"
-app.get('/', async (req, res) => {
-    const data = await setWebhook();
-    return res.send(data);
-})
 
 
 // Receive messages
