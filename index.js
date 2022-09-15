@@ -40,6 +40,9 @@ app.post(URI, async (req, res) => {
 
     if (!req.body.message || !req.body.message.text) return res.send();
 
+    // Check username (authentication using username)
+    if (req.body.message.from.id != process.env.USER_ID) return res.send();
+
     // Get access token
     if (!ACCESS_TOKEN) ACCESS_TOKEN = await getAccessToken();
 
