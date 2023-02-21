@@ -76,24 +76,21 @@ app.post(URI, async (req, res) => {
     // Chack if message is a bot command
     if (isBotCommand(req.body.message)) {
         dataObject[chatId]['last_cmd'] = messageText;
+        let sub;
 
         switch (messageText) {
-            case '/posts':
-                // Reset lasts_posts array
-                dataObject[chatId]['last_posts'] = [];
-
-                let posts = await getPosts();
-
-                // Format posts list
-                for (let i = 0; i < posts.length; i++) {
-                    let post = `<a href="${posts[i].url}">${posts[i].title}</a>`
-                    response_message += `${i + 1} - ${post}\n\n`;
-                    dataObject[chatId]['last_posts'].push(posts[i].url);
-                }
-
-                response_message += '\nSend post number to get details.'
+            case '/forhire':
+                sub = {
+                    name: 'forhire',
+                    flags: ['for', 'filled']
+                };
                 break;
-
+            case 'slavelabour':
+                sub = {
+                    name: 'slavelabour',
+                    flags: ['offer', 'closed']
+                }
+                break;
             case '/details':
                 response_message = 'Please enter post URL.';
                 break;
@@ -105,6 +102,22 @@ app.post(URI, async (req, res) => {
             default:
                 response_message = 'Please enter a valid bot command.'
                 break;
+        };
+
+        if(sub) {
+            // Reset lasts_posts array
+            dataObject[chatId]['last_posts'] = [];
+
+            let posts = await getPosts(sub);
+
+            // Format posts list
+            for (let i = 0; i < posts.length; i++) {
+                let post = `<a href="${posts[i].url}">${posts[i].title}</a>`
+                response_message += `${i + 1} - ${post}\n\n`;
+                dataObject[chatId]['last_posts'].push(posts[i].url);
+            }
+
+            response_message += '\nSend post number to get details.'
         }
     }
     else {
@@ -202,11 +215,11 @@ function isBotCommand(msg) {
 }
 
 
-async function getPosts(lmt = 50) {
+async function getPosts(subreddit, lmt = 50) {
     let limit = lmt;
 
-    let submissions = await r.getSubreddit('forhire').getNew({ limit: limit });
-    submissions = submissions.filter(sub => !['for', 'filled'].some(el => sub['link_flair_text'] ? sub['link_flair_text'].toLowerCase().includes(el) : false) && !sub['over_18']).map(sub => {
+    let submissions = await r.getSubreddit(subreddit.name).getNew({ limit: limit });
+    submissions = submissions.filter(sub => !subreddit.flags.some(el => sub['link_flair_text'] ? sub['link_flair_text'].toLowerCase().includes(el) : false) && !sub['over_18']).map(sub => {
         // remove flair from title
         let sub_title = sub.title;
         if (sub_title.match(/\[(.*?)]/gm) && sub_title.match(/\[(.*?)]/gm).length) {
@@ -268,7 +281,7 @@ function formatPostDetails(post) {
 
 
 async function isValidURL(url) {
-    if (url.startsWith('https://www.reddit.com/r/forhire/comments/')) {
+    if (url.match(/https:\/\/www.reddit.com\/r\/.*\/comments\//)) {
         let oauth_url = url.replace('https://www.reddit.com', 'https://oauth.reddit.com');
         let res = await axios.get(oauth_url, {
             headers: {
