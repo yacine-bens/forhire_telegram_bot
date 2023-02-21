@@ -121,7 +121,7 @@ app.post(URI, async (req, res) => {
         }
     }
     else {
-        if (dataObject[chatId]['last_cmd'] === '/posts') {
+        if (['/forhire', '/slavelabour'].includes(dataObject[chatId]['last_cmd'])) {
             // Check if message received is a valid number
             if (isNaN(messageText) || parseInt(messageText) < 0 || parseInt(messageText) > dataObject[chatId]['last_posts'].length) {
                 response_message = 'Please enter a valid number.'
