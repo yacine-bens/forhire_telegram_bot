@@ -85,7 +85,7 @@ app.post(URI, async (req, res) => {
                     flags: ['for', 'filled']
                 };
                 break;
-            case 'slavelabour':
+            case '/slavelabour':
                 sub = {
                     name: 'slavelabour',
                     flags: ['offer', 'closed']
