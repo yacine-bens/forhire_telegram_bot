@@ -31,7 +31,7 @@ setWebhook();
 
 
 // Database alternative
-let dataObject = {};
+// let dataObject = {};
 
 
 // Receive messages
@@ -66,16 +66,16 @@ app.post(URI, async (req, res) => {
 
     // Data object
     // First time
-    if (!dataObject[chatId]) {
-        dataObject[chatId] = {};
-        dataObject[chatId]['last_cmd'] = '/start';
-        dataObject[chatId]['last_posts'] = [];
-    }
+    // if (!dataObject[chatId]) {
+    //     dataObject[chatId] = {};
+    //     dataObject[chatId]['last_cmd'] = '/start';
+    //     dataObject[chatId]['last_posts'] = [];
+    // }
 
 
     // Chack if message is a bot command
     if (isBotCommand(req.body.message)) {
-        dataObject[chatId]['last_cmd'] = messageText;
+        // dataObject[chatId]['last_cmd'] = messageText;
         let sub;
 
         switch (messageText) {
@@ -91,12 +91,12 @@ app.post(URI, async (req, res) => {
                     flags: ['offer', 'closed']
                 }
                 break;
-            case '/details':
-                response_message = 'Please enter post URL.';
-                break;
+            // case '/details':
+            //     response_message = 'Please enter post URL.';
+            //     break;
 
             case '/start':
-                response_message = '';
+                response_message = 'Please enter a bot command: /forhire , /slavelabour';
                 break;
 
             default:
@@ -105,8 +105,8 @@ app.post(URI, async (req, res) => {
         };
 
         if(sub) {
-            // Reset lasts_posts array
-            dataObject[chatId]['last_posts'] = [];
+            // Reset last_posts array
+            // dataObject[chatId]['last_posts'] = [];
 
             let posts = await getPosts(sub);
 
@@ -114,37 +114,37 @@ app.post(URI, async (req, res) => {
             for (let i = 0; i < posts.length; i++) {
                 let post = `<a href="${posts[i].url}">${posts[i].title}</a>`
                 response_message += `${i + 1} - ${post}\n\n`;
-                dataObject[chatId]['last_posts'].push(posts[i].url);
+                // dataObject[chatId]['last_posts'].push(posts[i].url);
             }
 
-            response_message += '\nSend post number to get details.'
+            // response_message += '\nSend post number to get details.'
         }
     }
-    else {
-        if (['/forhire', '/slavelabour'].includes(dataObject[chatId]['last_cmd'])) {
-            // Check if message received is a valid number
-            if (isNaN(messageText) || parseInt(messageText) < 0 || parseInt(messageText) > dataObject[chatId]['last_posts'].length) {
-                response_message = 'Please enter a valid number.'
-            }
-            else {
-                const number = parseInt(messageText);
-                const post_url = dataObject[chatId]['last_posts'][number - 1];
-                const post = await getPostDetails(post_url);
-                response_message = formatPostDetails(post);
-            }
-        }
-        else if (dataObject[chatId]['last_cmd'] === '/details') {
-            // isValidURL() is an async funciton
-            const isValid = await isValidURL(messageText);
-            if (isValid) {
-                let post = await getPostDetails(messageText);
-                response_message = formatPostDetails(post);
-            }
-            else {
-                response_message = 'Please enter a valid post URL.'
-            }
-        }
-    }
+    // else {
+    //     if (['/forhire', '/slavelabour'].includes(dataObject[chatId]['last_cmd'])) {
+    //         // Check if message received is a valid number
+    //         if (isNaN(messageText) || parseInt(messageText) < 0 || parseInt(messageText) > dataObject[chatId]['last_posts'].length) {
+    //             response_message = 'Please enter a valid number.'
+    //         }
+    //         else {
+    //             const number = parseInt(messageText);
+    //             const post_url = dataObject[chatId]['last_posts'][number - 1];
+    //             const post = await getPostDetails(post_url);
+    //             response_message = formatPostDetails(post);
+    //         }
+    //     }
+    //     else if (dataObject[chatId]['last_cmd'] === '/details') {
+    //         // isValidURL() is an async funciton
+    //         const isValid = await isValidURL(messageText);
+    //         if (isValid) {
+    //             let post = await getPostDetails(messageText);
+    //             response_message = formatPostDetails(post);
+    //         }
+    //         else {
+    //             response_message = 'Please enter a valid post URL.'
+    //         }
+    //     }
+    // }
 
     // Respond to user
     if (response_message != '') {
