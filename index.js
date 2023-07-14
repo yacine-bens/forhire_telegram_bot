@@ -41,7 +41,7 @@ app.post(URI, async (req, res) => {
     if (!req.body.message || !req.body.message.text) return res.send();
 
     // Check username (authentication using Telegram user ID)
-    if (req.body.message.from.id.toString() != process.env.USER_ID.toString()) return res.send();
+    // if (req.body.message.from.id.toString() != process.env.USER_ID.toString()) return res.send();
 
     // Get access token
     if (!ACCESS_TOKEN) ACCESS_TOKEN = await getAccessToken();
