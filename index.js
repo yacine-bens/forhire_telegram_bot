@@ -104,7 +104,7 @@ app.post(URI, async (req, res) => {
                 break;
         };
 
-        if(sub) {
+        if (sub) {
             // Reset last_posts array
             // dataObject[chatId]['last_posts'] = [];
 
@@ -119,6 +119,9 @@ app.post(URI, async (req, res) => {
 
             // response_message += '\nSend post number to get details.'
         }
+    }
+    else {
+        response_message = 'Please enter a valid bot command.';
     }
     // else {
     //     if (['/forhire', '/slavelabour'].includes(dataObject[chatId]['last_cmd'])) {
