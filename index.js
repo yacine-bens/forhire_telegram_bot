@@ -165,7 +165,7 @@ app.post(URI, async (req, res) => {
 
 
 app.listen(process.env.PORT || 5000, async () => {
-    await setWebhook();
+    // await setWebhook();
     console.log('App is running on port', process.env.PORT || 5000);
 })
 
