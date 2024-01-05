@@ -27,7 +27,7 @@ async function setWebhook() {
     return res.data;
 }
 
-setWebhook();
+// setWebhook();
 
 
 // Database alternative
